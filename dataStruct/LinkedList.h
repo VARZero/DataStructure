@@ -1,11 +1,13 @@
 #ifndef __VZ_LINKEDLIST__
 #define __VZ_LINKEDLIST__
 
+#include <iostream>
+
 template<typename T>
 class nodeLL{ // 단일 링크드 리스트 노드
     private:
         T data;
-        nodeLL*<T> nextPtr;
+        nodeLL<T>* nextPtr;
     public:
         nodeLL();
         ~nodeLL();
@@ -52,11 +54,13 @@ class LL{
         virtual bool remove(nodeLL<T>*);
 
         virtual nodeLL<T>* search(T, int&) const;
+        
+        virtual void printAll();
 };
 
 template<typename T>
 nodeLL<T>* LL<T>::getLastNode() const{
-    if (IsEmpty) return nullptr;
+    if (IsEmpty()) return nullptr;
     nodeLL<T>* lastNode = headPtr;
     while(lastNode->getNext() != nullptr){ lastNode = lastNode->getNext(); }
     return lastNode;
@@ -66,7 +70,7 @@ nodeLL<T>* LL<T>::getLastNode() const{
 
 template<typename T>
 bool LL<T>::IsEmpty() const{
-    if (headPtr == nullptr){return true}
+    if (headPtr == nullptr){ return true; }
     return false;
 }
 
@@ -87,10 +91,10 @@ LL<T>::~LL(){
 
 template<typename T>
 void LL<T>::add(T newData){
-    nodeLL<T>* newNode, lastNode = getLastNode();
+    nodeLL<T> *newNode, *lastNode = getLastNode();
     newNode = new nodeLL<T>;
     newNode->setData(newData);
-    if (IsEmpty) { headPtr = newNode; return; }
+    if (IsEmpty()) { headPtr = newNode; return; }
     lastNode->setNext(newNode);
 
     // O(N) ( O(4N+8) )
@@ -98,8 +102,8 @@ void LL<T>::add(T newData){
 
 template<typename T>
 bool LL<T>::remove(int index){
-    nodeLL<T>* delNode, delPreNode = headPtr;
-    if (IsEmpty){ return false; }
+    nodeLL<T> *delNode, *delPreNode = headPtr;
+    if (IsEmpty()){ return false; }
     
     if (index == 0){
         headPtr = headPtr->getNext();
@@ -115,14 +119,14 @@ bool LL<T>::remove(int index){
     if (delNode == nullptr){return false;}
     delPreNode->setNext(delNode->getNext());
     delete delNode;
-    bool true;
+    return true;
 
     // O(N) ( O(4N+17) )
 }
 
 template<typename T>
 bool LL<T>::remove(nodeLL<T>* selNode){
-    if (IsEmpty){ return false; }
+    if (IsEmpty()){ return false; }
     nodeLL<T>* selPreNode = headPtr;
     if (selNode == headPtr){
         headPtr = selNode->getNext();
@@ -144,16 +148,29 @@ bool LL<T>::remove(nodeLL<T>* selNode){
 
 template<typename T>
 nodeLL<T>* LL<T>::search(T findData, int& index) const{
-    if (IsEmpty){ index = -1; return nullptr; }
+    if (IsEmpty()){ index = -1; return nullptr; }
     int idxOut = 0;
     nodeLL<T>* findNode = headPtr;
     while (findNode->getData() != findData){
         findNode = findNode->getNext(); idxOut++;
         if (findNode == nullptr){ index = -1; return nullptr; }
     }
+    index = idxOut;
     return findNode;
 
     // O(N) ( O(6N+5) )
+}
+
+template<typename T>
+void LL<T>::printAll(){
+    nodeLL<T>* printNode = headPtr;
+    while(printNode != nullptr){
+        std::cout << printNode->getData() << " ";
+        printNode = printNode->getNext();
+    }
+    std::cout << std::endl;
+
+    // O(N) ( O(3N+3) )
 }
 
 #endif

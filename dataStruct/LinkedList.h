@@ -38,15 +38,18 @@ template<typename T>
 void nodeLL<T>::setNext(nodeLL<T>* newNext){ nextPtr = newNext; }
 
 template<typename T>
-class LL{
+class LL{ // 단일 링크드리스트
     private:
         nodeLL<T>* headPtr;
-        
-        nodeLL<T>* getLastNode() const;
-        bool IsEmpty() const;
     public:
         LL();
         ~LL();
+
+        nodeLL<T>* getHead() const;
+        void setHead(nodeLL<T>*);        
+
+        virtual nodeLL<T>* getLastNode() const;
+        bool IsEmpty() const;
 
         virtual void add(T);
         
@@ -57,22 +60,6 @@ class LL{
         
         virtual void printAll();
 };
-
-template<typename T>
-nodeLL<T>* LL<T>::getLastNode() const{
-    if (IsEmpty()) return nullptr;
-    nodeLL<T>* lastNode = headPtr;
-    while(lastNode->getNext() != nullptr){ lastNode = lastNode->getNext(); }
-    return lastNode;
-
-    // O(N) ( O(4N+3) )
-}
-
-template<typename T>
-bool LL<T>::IsEmpty() const{
-    if (headPtr == nullptr){ return true; }
-    return false;
-}
 
 template<typename T>
 LL<T>::LL(){ headPtr = nullptr; }
@@ -90,11 +77,33 @@ LL<T>::~LL(){
 }
 
 template<typename T>
+nodeLL<T>* LL<T>::getHead() const{ return headPtr; }
+
+template<typename T>
+void LL<T>::setHead(nodeLL<T>* newHead){ headPtr = newHead; }
+
+template<typename T>
+nodeLL<T>* LL<T>::getLastNode() const{
+    if (IsEmpty()) return nullptr;
+    nodeLL<T>* lastNode = getHead();
+    while(lastNode->getNext() != nullptr){ lastNode = lastNode->getNext(); }
+    return lastNode;
+
+    // O(N) ( O(4N+3) )
+}
+
+template<typename T>
+bool LL<T>::IsEmpty() const{
+    if (getHead() == nullptr){ return true; }
+    return false;
+}
+
+template<typename T>
 void LL<T>::add(T newData){
     nodeLL<T> *newNode, *lastNode = getLastNode();
     newNode = new nodeLL<T>;
     newNode->setData(newData);
-    if (IsEmpty()) { headPtr = newNode; return; }
+    if (IsEmpty()) { setHead(newNode); return; }
     lastNode->setNext(newNode);
 
     // O(N) ( O(4N+8) )
@@ -102,16 +111,16 @@ void LL<T>::add(T newData){
 
 template<typename T>
 bool LL<T>::remove(int index){
-    nodeLL<T> *delNode, *delPreNode = headPtr;
+    nodeLL<T> *delNode, *delPreNode = getHead();
     if (IsEmpty()){ return false; }
     
     if (index == 0){
-        headPtr = headPtr->getNext();
+        setHead(getHead()->getNext());
         delete delPreNode;
         return true;
     }
     
-    for (int cmpIdx = 0; cmpIdx < index; cmpIdx++){
+    for (int cmpIdx = 0; cmpIdx < (index-1); cmpIdx++){
         if (delPreNode == nullptr){return false;}
         delPreNode = delPreNode->getNext();
     }
@@ -127,9 +136,9 @@ bool LL<T>::remove(int index){
 template<typename T>
 bool LL<T>::remove(nodeLL<T>* selNode){
     if (IsEmpty()){ return false; }
-    nodeLL<T>* selPreNode = headPtr;
-    if (selNode == headPtr){
-        headPtr = selNode->getNext();
+    nodeLL<T>* selPreNode = getHead();
+    if (selNode == getHead()){
+        setHead(selNode->getNext());
         delete selNode;
         return true;
     }
@@ -150,7 +159,7 @@ template<typename T>
 nodeLL<T>* LL<T>::search(T findData, int& index) const{
     if (IsEmpty()){ index = -1; return nullptr; }
     int idxOut = 0;
-    nodeLL<T>* findNode = headPtr;
+    nodeLL<T>* findNode = getHead();
     while (findNode->getData() != findData){
         findNode = findNode->getNext(); idxOut++;
         if (findNode == nullptr){ index = -1; return nullptr; }
@@ -163,7 +172,7 @@ nodeLL<T>* LL<T>::search(T findData, int& index) const{
 
 template<typename T>
 void LL<T>::printAll(){
-    nodeLL<T>* printNode = headPtr;
+    nodeLL<T>* printNode = getHead();
     while(printNode != nullptr){
         std::cout << printNode->getData() << " ";
         printNode = printNode->getNext();
@@ -171,6 +180,59 @@ void LL<T>::printAll(){
     std::cout << std::endl;
 
     // O(N) ( O(3N+3) )
+}
+
+template<typename T>
+class nodeLLd:public nodeLL<T>{ // 연속 링크드 리스트 노드
+    private:
+        nodeLLd<T>* prevPtr;
+    public:
+        nodeLLd():nodeLL<T>(){ prevPtr = nullptr; }
+
+        nodeLLd<T>* getPrev() const;
+        void setPrev(nodeLLd<T>*);
+};
+
+template<typename T>
+nodeLLd<T>* nodeLLd<T>::getPrev() const{ return prevPtr; }
+
+template<typename T>
+void nodeLLd<T>::setPrev(nodeLLd<T>* newPrev){ prevPtr = newPrev; }
+
+template<typename T>
+class LLd:public LL<T>{ // 연속 링크드 리스트 
+    // 연속 링크드 리스트는 포인터로 자식요소에 접근하게 할거임..
+    public:
+        nodeLLd<T>* getLastNode() const;
+
+        void add(T);
+        
+        bool remove(int);
+        bool remove(nodeLL<T>*);
+
+        nodeLL<T>* search(T, int&) const;
+        
+        void printAll();
+};
+
+template<typename T>
+nodeLLd<T>* LLd<T>::getLastNode() const{
+    if (IsEmpty()) return nullptr;
+    nodeLLd<T>* lastNode = (nodeLLd<T>*) getHead();
+    while(lastNode->getNext() != nullptr){
+        lastNode = (nodeLLd<T>*) lastNode->getNext();
+    }
+    return lastNode;
+}
+
+template<typename T>
+void LLd<T>::add(T newData){
+    nodeLLd<T> *newNode, *lastNode = getLastNode();
+    newNode = new nodeLLd<T>;
+    newNode->setData(newData);
+    if (IsEmpty()){ setHead(newNode); return; }
+    newNode->setPrev(lastNode);
+    lastNode->setNext();
 }
 
 #endif

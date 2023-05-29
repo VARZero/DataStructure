@@ -33,7 +33,7 @@ int main(){
     exm_LL1.remove(find1);
     exm_LL1.printAll();
 
-    cout << "순환" << endl;
+    cout << "연속" << endl;
 
     LLd<int> exm_LLd;
     exm_LLd.add(10); exm_LLd.add(2); exm_LLd.add(15); exm_LLd.add(30);
@@ -48,6 +48,21 @@ int main(){
     cout << idx2 << " " << find2->getData() << endl;
     exm_LLd.remove(find2);
     exm_LLd.printAll();
+
+    cout << "순환" << endl;
+    LLc<int> exm_LLc;
+    exm_LLc.add(10); exm_LLc.add(2); exm_LLc.add(15); exm_LLc.add(30);
+    exm_LLc.printAll();
+    exm_LLc.remove(2);
+    exm_LLc.printAll();
+    exm_LLc.add(14); exm_LLc.add(3); exm_LLc.add(9); exm_LLc.add(0);
+    exm_LLc.printAll();
+
+    int idx3;
+    nodeLL<int>* find3 = exm_LLc.search(14, idx3);
+    cout << idx3 << " " << find3->getData() << endl;
+    exm_LLc.remove(find2);
+    exm_LLc.printAll();
 
     return 0;
 }

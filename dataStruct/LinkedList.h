@@ -292,6 +292,106 @@ nodeLLd<T>* LLd<T>::search(T findData, int& index) const{
     return findNode;
 }
 
+template<typename T>
+class LLc:public LL<T>{
+    public:
+        nodeLL<T>* getLastNode() const;
 
+        void add(T);
+
+        bool remove(int);
+        bool remove(nodeLL<T>*);
+
+        nodeLL<T>* search(T, int&) const;
+
+        void printAll();
+};
+
+template<typename T>
+nodeLL<T>* LLc<T>::getLastNode() const{
+    std::cout << " -gln- ";
+    if (this->IsEmpty()){ return nullptr; }
+    nodeLL<T>* LastNode = this->getHead();
+    while(LastNode->getNext() != this->getHead()){
+        LastNode = LastNode->getNext();
+        if (LastNode == nullptr){ return nullptr; }
+    }
+    return LastNode;
+}
+
+template<typename T>
+void LLc<T>::add(T newData){ std::cout << " -add- ";
+    nodeLL<T> *newNode, *lastNode = getLastNode();
+    newNode = new nodeLL<T>;
+    newNode->setData(newData);
+    if (this->IsEmpty()){
+        this->setHead(newNode); newNode->setNext(newNode); return;
+    }
+    lastNode->setNext(newNode);
+}
+
+template<typename T>
+bool LLc<T>::remove(int index){
+    nodeLL<T> *delNode, *delPreNode = this->getHead();
+    if (this->IsEmpty()){ return false; }
+    
+    if (index == 0){
+        this->setHead(this->getHead()->getNext());
+        delete delPreNode;
+        return true;
+    }
+    delPreNode = delPreNode->getNext();
+    for (int cmpIdx = 1; cmpIdx < (index-1); cmpIdx++){
+        if (delPreNode == this->getHead()){return false;}
+        delPreNode = delPreNode->getNext();
+    }
+    delNode = delPreNode->getNext();
+    if (delNode == this->getHead()){return false;}
+    delPreNode->setNext(delNode->getNext());
+    delete delNode;
+    return true;
+}
+
+template<typename T>
+bool LLc<T>::remove(nodeLL<T>* selNode){
+    if (this->IsEmpty()){ return false; }
+    nodeLL<T>* selPreNode = this->getHead();
+    if (selNode == this->getHead()){
+        this->setHead(selNode->getNext());
+        delete selNode;
+        return true;
+    }
+    selPreNode = selPreNode->getNext();
+    while (selPreNode->getNext() != selNode){
+        selPreNode = selPreNode->getNext();
+        if (selPreNode == nullptr){return false;}
+    }
+    selPreNode->setNext(selNode->getNext());
+    delete selNode;
+    return true;
+}
+
+template<typename T>
+nodeLL<T>* LLc<T>::search(T findData, int& index) const{
+    if (this->IsEmpty()){ index = -1; return nullptr; }
+    int idxOut = 0;
+    nodeLL<T>* findNode = this->getHead();
+    while (findNode->getData() != findData){
+        findNode = findNode->getNext(); idxOut++;
+        if (findNode == this->getHead()){ index = -1; return nullptr; }
+    }
+    index = idxOut;
+    return findNode;
+}
+
+template<typename T>
+void LLc<T>::printAll(){
+    nodeLL<T>* printNode = this->getHead();
+    do{
+        std::cout << printNode->getData() << " ";
+        printNode = printNode->getNext();
+    }while(printNode != this->getHead());
+    std::cout << std::endl;
+}
 
 #endif

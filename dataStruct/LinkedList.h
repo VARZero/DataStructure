@@ -296,6 +296,7 @@ nodeLLd<T>* LLd<T>::search(T findData, int& index) const{
 template<typename T>
 class LLc:public LL<T>{
     public:
+        ~LLc();
         nodeLL<T>* getLastNode() const;
 
         void add(T);
@@ -307,6 +308,20 @@ class LLc:public LL<T>{
 
         void printAll();
 };
+
+template<typename T>
+LLc<T>::~LLc(){
+    nodeLL<T> *delNode = this->getHead(),
+        *headAddr = this->getHead();
+    if (this->IsEmpty()){return;}
+    do{
+        this->setHead(delNode);
+        delNode = delNode->getNext();
+        delete this->getHead();
+    }while(delNode != headAddr);
+
+    this->setHead(nullptr);
+}
 
 template<typename T>
 nodeLL<T>* LLc<T>::getLastNode() const{
@@ -324,13 +339,11 @@ void LLc<T>::add(T newData){
     nodeLL<T> *newNode, *lastNode = getLastNode();
     newNode = new nodeLL<T>;
     newNode->setData(newData);
-    newNode->setNext(newNode);
     if (this->IsEmpty()){
-        this->setHead(newNode); return;
+        this->setHead(newNode); newNode->setNext(newNode); return;
     }
-    if (lastNode != nullptr){
-        lastNode->setNext(newNode);
-    }
+    newNode->setNext(this->getHead());
+    lastNode->setNext(newNode);
 }
 
 template<typename T>
@@ -340,6 +353,7 @@ bool LLc<T>::remove(int index){
     
     if (index == 0){
         this->setHead(this->getHead()->getNext());
+        this->getLastNode()->setNext(this->getHead());
         delete delPreNode;
         return true;
     }

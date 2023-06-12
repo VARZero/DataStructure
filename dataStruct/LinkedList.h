@@ -2,6 +2,7 @@
 #define __VZ_LINKEDLIST__
 
 #include <iostream>
+#include <stdio.h>
 
 template<typename T>
 class nodeLL{ // 단일 링크드 리스트 노드
@@ -309,7 +310,6 @@ class LLc:public LL<T>{
 
 template<typename T>
 nodeLL<T>* LLc<T>::getLastNode() const{
-    std::cout << " -gln- ";
     if (this->IsEmpty()){ return nullptr; }
     nodeLL<T>* LastNode = this->getHead();
     while(LastNode->getNext() != this->getHead()){
@@ -320,14 +320,17 @@ nodeLL<T>* LLc<T>::getLastNode() const{
 }
 
 template<typename T>
-void LLc<T>::add(T newData){ std::cout << " -add- ";
+void LLc<T>::add(T newData){
     nodeLL<T> *newNode, *lastNode = getLastNode();
     newNode = new nodeLL<T>;
     newNode->setData(newData);
+    newNode->setNext(newNode);
     if (this->IsEmpty()){
-        this->setHead(newNode); newNode->setNext(newNode); return;
+        this->setHead(newNode); return;
     }
-    lastNode->setNext(newNode);
+    if (lastNode != nullptr){
+        lastNode->setNext(newNode);
+    }
 }
 
 template<typename T>

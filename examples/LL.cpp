@@ -51,7 +51,7 @@ int main(){
 
     cout << "순환" << endl;
     LLc<int> exm_LLc;
-    exm_LLc.add(10); exm_LLc.add(2); exm_LLc.add(15); exm_LLc.add(30);
+    exm_LLc.add(10);/* exm_LLc.add(2); exm_LLc.add(15); exm_LLc.add(30);
     exm_LLc.printAll();
     exm_LLc.remove(2);
     exm_LLc.printAll();
@@ -63,6 +63,6 @@ int main(){
     cout << idx3 << " " << find3->getData() << endl;
     exm_LLc.remove(find2);
     exm_LLc.printAll();
-
+    */
     return 0;
 }

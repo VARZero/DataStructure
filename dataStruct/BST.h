@@ -61,13 +61,92 @@ class BST{
         BST();
         ~BST();
 
-        void setRoot(nodeBST<I,T>* newRoot);
-        nodeBST<I,T>* getRoot();
+        bool IsEmpty();
+        nodeBST<I,T>* getParent(I findIdx) const;
+        char checkLR(I checkIdx, I sourceIdx) const;
 
-        bool add(nodeBST<I,T>* newNode);
-        bool remove(nodeBST<I,T>* delNode);
-        bool search(I findIdx);
-        bool arrangement();
+        void setRoot(nodeBST<I,T>* newRoot);
+        nodeBST<I,T>* getRoot() const;
+
+        virtual bool add(I newIndex, T newData);
+        virtual bool remove(nodeBST<I,T>* delNode);
+        virtual bool search(I findIdx);
 };
+
+template<typename I,typename T>
+BST<I,T>::BST(){ root = nullptr; }
+
+template<typename I,typename T>
+BST<I,T>::~BST(){}
+
+template<typename I,typename T>
+bool BST<I,T>::IsEmpty(){
+    if (root = nullptr){ return false; }
+    return true;
+}
+
+template<typename I,typename T>
+nodeBST<I,T>* BST<I,T>::getParent(I findIdx) const {
+    if (IsEmpty()){ return nullptr; }
+    nodeBST<I,T> *parent = nullptr, *checkNode = getRoot();
+    while(checkNode != nullptr){
+        if (checkNode->getIndex() == findIdx){ return parent; }
+        else if (checkNode->getIndex() < findIdx){
+            checkNode = checkNode->getLeft();
+        }
+        else if (checkNode->getIndex() > findIdx){
+            checkNode = checkNode->getRight();
+        }
+
+        if (checkNode == nullptr){ return parent; }
+        parent = checkNode;
+    }
+    return nullptr;
+}
+
+template<typename I,typename T>
+char BST<I,T>::checkLR(I checkIdx, I sourceIdx) const {
+    if (checkIdx < sourceIdx){return -1;}
+    else if (checkIdx > sourceIdx){return 1;}
+    return 0;
+}
+
+template<typename I,typename T>
+void BST<I,T>::setRoot(nodeBST<I,T>* newRoot){ root = newRoot; }
+
+template<typename I,typename T>
+nodeBST<I,T>* BST<I,T>::getRoot() const { return root; }
+
+template<typename I,typename T>
+bool BST<I,T>::add(I newIndex, T newData){
+    nodeBST<I,T>* newNode = new nodeBST<I,T>;
+    newNode->setIndex(newIndex);
+    newNode->setData(newData);
+    if (IsEmpty() == nullptr){ setRoot(newNode); return true; }
+    nodeBST<I,T> *nNParent = getParent(newNode->getIndex()), *preNode;
+    
+    if (nNParent == nullptr){ nNParent = getRoot(); }
+    
+    switch(checkLR(nNParent->getIndex(), newIndex)){
+        case -1:
+            preNode = nNParent->getLeft();
+            nNParent->setLeft(newNode);
+        break;
+        case 0: return false; break;
+        case 1:
+            preNode = nNParent->getRight();
+            nNParent->setRight(newNode);
+        break;
+    }
+
+    if (preNode != nullptr){
+        switch(checkLR(newIndex, preNode->getIndex())){
+            case -1: newNode->setLeft(preNode); break;
+            case 1: newNode->setRight(preNode); break;
+        }
+    }
+
+    return true;
+}
 
 #endif

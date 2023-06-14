@@ -70,7 +70,7 @@ class BST{
 
         virtual bool add(I newIndex, T newData);
         virtual bool remove(nodeBST<I,T>* delNode);
-        virtual bool search(I findIdx);
+        virtual bool search(I findIdx, nodeBST<I,T>* findNode);
 };
 
 template<typename I,typename T>
@@ -147,6 +147,34 @@ bool BST<I,T>::add(I newIndex, T newData){
     }
 
     return true;
+}
+
+template<typename I,typename T>
+bool BST<I,T>::remove(nodeBST<I,T>* delNode){
+    if (!search(delNode->getIndex(), nullptr)){ return false; }
+    nodeBST<I,T> *parNode, *delLNode, *chnNode, 
+        *chnCLNode, *chnCRNode;
+    parNode = getParent(delNode->getIndex());
+    if (getRoot() == delNode){}
+
+    delLNode = delNode->getLeft(); chnNode = delNode->getRight();
+    //if (chnNode == nullptr){ parNode-> }
+}
+
+template<typename I,typename T>
+bool BST<I,T>::search(I findIdx, nodeBST<I,T>* findNode){
+    nodeBST<I,T>* checkNode = getRoot();
+    while(checkNode != nullptr){
+        switch(checkLR(findIdx, checkNode->getIndex())){
+            case -1: checkNode = checkNode->getLeft(); break;
+            case 0:
+                if (findNode != nullptr){ findNode = checkNode; }
+                return true;
+            break;
+            case 1: checkNode = checkNode->getRight(); break;
+        }
+    }
+    return false;
 }
 
 #endif

@@ -61,7 +61,7 @@ class BST{
         BST();
         ~BST();
 
-        bool IsEmpty();
+        bool IsEmpty() const;
         nodeBST<I,T>* getParent(I findIdx) const;
         char checkLR(I checkIdx, I sourceIdx) const;
 
@@ -80,9 +80,9 @@ template<typename I,typename T>
 BST<I,T>::~BST(){}
 
 template<typename I,typename T>
-bool BST<I,T>::IsEmpty(){
-    if (root = nullptr){ return false; }
-    return true;
+bool BST<I,T>::IsEmpty() const{
+    if (root == nullptr){ return true; }
+    return false;
 }
 
 template<typename I,typename T>
@@ -122,7 +122,7 @@ bool BST<I,T>::add(I newIndex, T newData){
     nodeBST<I,T>* newNode = new nodeBST<I,T>;
     newNode->setIndex(newIndex);
     newNode->setData(newData);
-    if (IsEmpty() == nullptr){ setRoot(newNode); return true; }
+    if (IsEmpty()){ setRoot(newNode); return true; }
     nodeBST<I,T> *nNParent = getParent(newNode->getIndex()), *preNode;
     
     if (nNParent == nullptr){ nNParent = getRoot(); }
@@ -152,13 +152,24 @@ bool BST<I,T>::add(I newIndex, T newData){
 template<typename I,typename T>
 bool BST<I,T>::remove(nodeBST<I,T>* delNode){
     if (!search(delNode->getIndex(), nullptr)){ return false; }
-    nodeBST<I,T> *parNode, *delLNode, *chnNode, 
-        *chnCLNode, *chnCRNode;
-    parNode = getParent(delNode->getIndex());
-    if (getRoot() == delNode){}
-
+    nodeBST<I,T> *parNode, *delLNode, *chnNode, *mostLeft;
+    
     delLNode = delNode->getLeft(); chnNode = delNode->getRight();
-    //if (chnNode == nullptr){ parNode-> }
+    mostLeft = chnNode;
+    if (getRoot() == delNode){
+        setRoot(chnNode);
+    }
+    else{
+        parNode = getParent(delNode->getIndex());
+        switch(checkLR(parNode->getIndex(), delNode->getIndex())){
+            case -1: parNode->setLeft(chnNode); break;
+            case 1: parNode->setRight(chnNode); break;
+        }
+    }
+    while(mostLeft->getLeft() != nullptr){ mostLeft = mostLeft->getLeft(); }
+    mostLeft->setLeft(delLNode);
+    delete delNode;
+    return true;
 }
 
 template<typename I,typename T>

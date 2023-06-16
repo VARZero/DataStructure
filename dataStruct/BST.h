@@ -1,6 +1,10 @@
 #ifndef __VZ_BST__
 #define __VZ_BST__
 
+#include <iostream>
+
+using namespace std;
+
 template<typename I,typename T>
 class nodeBST{
     private:
@@ -57,6 +61,15 @@ template<typename I,typename T>
 class BST{
     private:
         nodeBST<I,T>* root;
+
+        void printBSTOne(nodeBST<I,T>* One, char lrP, int depth) const{
+            if (One == nullptr){return;}
+            cout << "(" << depth << ")";
+            for (int i = 0; i < lrP; i++){ cout << "  /  "; }
+            cout << One->getIndex() << " | " << One->getData() << endl;
+            printBSTOne(One->getLeft(), lrP, depth+1);
+            printBSTOne(One->getRight(), lrP+1, depth+1);
+        }
     public:
         BST();
         ~BST();
@@ -70,7 +83,9 @@ class BST{
 
         virtual bool add(I newIndex, T newData);
         virtual bool remove(nodeBST<I,T>* delNode);
-        virtual bool search(I findIdx, nodeBST<I,T>* findNode);
+        virtual bool search(I findIdx, nodeBST<I,T>* &findNode);
+
+        void printBST() const;
 };
 
 template<typename I,typename T>
@@ -91,23 +106,23 @@ nodeBST<I,T>* BST<I,T>::getParent(I findIdx) const {
     nodeBST<I,T> *parent = nullptr, *checkNode = getRoot();
     while(checkNode != nullptr){
         if (checkNode->getIndex() == findIdx){ return parent; }
-        else if (checkNode->getIndex() < findIdx){
+        parent = checkNode;
+        if (checkNode->getIndex() > findIdx){
             checkNode = checkNode->getLeft();
         }
-        else if (checkNode->getIndex() > findIdx){
+        else if (checkNode->getIndex() < findIdx){
             checkNode = checkNode->getRight();
         }
 
         if (checkNode == nullptr){ return parent; }
-        parent = checkNode;
     }
     return nullptr;
 }
 
 template<typename I,typename T>
 char BST<I,T>::checkLR(I checkIdx, I sourceIdx) const {
-    if (checkIdx < sourceIdx){return -1;}
-    else if (checkIdx > sourceIdx){return 1;}
+    if (checkIdx > sourceIdx){return -1;}
+    else if (checkIdx < sourceIdx){return 1;}
     return 0;
 }
 
@@ -119,6 +134,8 @@ nodeBST<I,T>* BST<I,T>::getRoot() const { return root; }
 
 template<typename I,typename T>
 bool BST<I,T>::add(I newIndex, T newData){
+    nodeBST<I,T>* temp;
+    if (search(newIndex, temp)){ return false; }
     nodeBST<I,T>* newNode = new nodeBST<I,T>;
     newNode->setIndex(newIndex);
     newNode->setData(newData);
@@ -132,7 +149,6 @@ bool BST<I,T>::add(I newIndex, T newData){
             preNode = nNParent->getLeft();
             nNParent->setLeft(newNode);
         break;
-        case 0: return false; break;
         case 1:
             preNode = nNParent->getRight();
             nNParent->setRight(newNode);
@@ -151,7 +167,9 @@ bool BST<I,T>::add(I newIndex, T newData){
 
 template<typename I,typename T>
 bool BST<I,T>::remove(nodeBST<I,T>* delNode){
-    if (!search(delNode->getIndex(), nullptr)){ return false; }
+    if (delNode == nullptr){ cout << "삭제 실패" << endl; return false; }
+    nodeBST<I,T>* temp;
+    if (!search(delNode->getIndex(), temp)){ return false; }
     nodeBST<I,T> *parNode, *delLNode, *chnNode, *mostLeft;
     
     delLNode = delNode->getLeft(); chnNode = delNode->getRight();
@@ -161,7 +179,16 @@ bool BST<I,T>::remove(nodeBST<I,T>* delNode){
     }
     else{
         parNode = getParent(delNode->getIndex());
-        switch(checkLR(parNode->getIndex(), delNode->getIndex())){
+        char ch = checkLR(parNode->getIndex(), delNode->getIndex())
+        if (chnNode == nullptr){
+            switch(ch){
+                case -1: parNode->setLeft(delLNode); break;
+                case 1: parNode->setRight(delLNode); break;
+            }
+            delete delNode;
+            return true;
+        }
+        switch(ch){
             case -1: parNode->setLeft(chnNode); break;
             case 1: parNode->setRight(chnNode); break;
         }
@@ -173,19 +200,24 @@ bool BST<I,T>::remove(nodeBST<I,T>* delNode){
 }
 
 template<typename I,typename T>
-bool BST<I,T>::search(I findIdx, nodeBST<I,T>* findNode){
+bool BST<I,T>::search(I findIdx, nodeBST<I,T>* &findNode){
     nodeBST<I,T>* checkNode = getRoot();
     while(checkNode != nullptr){
-        switch(checkLR(findIdx, checkNode->getIndex())){
+        switch(checkLR(checkNode->getIndex(), findIdx)){
             case -1: checkNode = checkNode->getLeft(); break;
             case 0:
-                if (findNode != nullptr){ findNode = checkNode; }
+                findNode = checkNode;
                 return true;
             break;
             case 1: checkNode = checkNode->getRight(); break;
         }
     }
     return false;
+}
+
+template<typename I,typename T>
+void BST<I,T>::printBST() const{
+    printBSTOne(getRoot(), 0, 0);
 }
 
 #endif

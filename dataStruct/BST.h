@@ -179,7 +179,7 @@ bool BST<I,T>::remove(nodeBST<I,T>* delNode){
     }
     else{
         parNode = getParent(delNode->getIndex());
-        char ch = checkLR(parNode->getIndex(), delNode->getIndex())
+        char ch = checkLR(parNode->getIndex(), delNode->getIndex());
         if (chnNode == nullptr){
             switch(ch){
                 case -1: parNode->setLeft(delLNode); break;

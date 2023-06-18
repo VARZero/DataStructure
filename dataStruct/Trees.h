@@ -8,14 +8,25 @@ class AVL_Tree : public BST{
     //bool add(I newIndex, T newData);
     //bool remove(nodeBST<I,T>* delNode);
 
+    int getDepth(nodeBST<I,T>* targetNode, char* position);
     void rearrangement();
     void rotationLeft(nodeBST<I,T>* target);
     void rotationRight(nodeBST<I,T>* target);
 };
 
 template<typename I,typename T>
+int AVL_Tree<I,T>::getDepth(nodeBST<I,T>* targetNode, char* position){
+    if (targetNode == nullptr) { return 0; }
+    int dLeft = getDepth(targetNode->getLeft(), nullptr);
+    int dRight = getDepth(targetNode->getRight(), nullptr);
+    
+    if (dLeft > dRight) { position = -1; return dLeft; }
+    else if (dLeft < dRight) { position = 1; return dRight; }
+    else { position = 0; return 0; }
+}
+
+template<typename I,typename T>
 void AVL_Tree<I,T>::rearrangement(){
-    // 루트에서 양쪽 끝단까지 깊이 확인
     
 }
 

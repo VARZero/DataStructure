@@ -9,6 +9,7 @@ class AVL_Tree : public BST<I,T>{
     //bool remove(nodeBST<I,T>* delNode);
 
     int getDepth(nodeBST<I,T>* targetNode);
+    int checkBalance(int l, int r);
     void rearrangement();
     void rotationLeft(nodeBST<I,T>* target);
     void rotationRight(nodeBST<I,T>* target);
@@ -24,17 +25,26 @@ int AVL_Tree<I,T>::getDepth(nodeBST<I,T>* targetNode){
 }
 
 template<typename I,typename T>
+int AVL_Tree<I,T>::checkBalance(int l, int r){
+    return r - l;
+}
+
+template<typename I,typename T>
 void AVL_Tree<I,T>::rearrangement(){
     nodeBST<I,T>* root = this->getRoot();
     int rDL = getDepth(root->getLeft());
     int rDR = getDepth(root->getRight());
 
-    if (rDL < 2 && rDR < 2) { return; }
-    else if (rDL > rDR) { 
-        /*LL, LR*/
+    int bal = checkBalance(rDL, rDR);
+
+    if ( bal > 0 ){
+        // LL, LR
         
     }
-    else if (rDL < rDR) { /*RR, RL*/ }
+
+    else if ( bal > 0 ){
+        // RR, RL
+    }
 }
 
 template<typename I,typename T>
